@@ -1,0 +1,16 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Un utilisateur ne peut déposer QUE dans son dossier, une seule fois par fichier (pas d'écrasement),
+    // uniquement du JPEG de moins de 5 Mo. Aucune lecture publique (photos exploitées côté back-office).
+    match /reports/{uid}/{fileName} {
+      allow create: if request.auth != null
+                    && request.auth.uid == uid
+                    && fileName.matches('^[A-Za-z0-9]{15,40}\\.jpg$')
+                    && request.resource.size < 5 * 1024 * 1024
+                    && request.resource.contentType == 'image/jpeg';
+      allow read, update, delete: if false;
+    }
+  }
+}

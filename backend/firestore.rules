@@ -1,0 +1,54 @@
+rules_version = '2';
+
+// Principe : le client LIT, seules les Cloud Functions (Admin SDK, qui contourne ces règles) ÉCRIVENT
+// tout ce qui touche aux points. Un client modifié ne peut donc pas se créditer lui-même.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
+
+    // Profil + solde : lecture par le propriétaire uniquement.
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+      allow write: if false;
+    }
+
+    // Signalements complets (contiennent userId, chemin photo…) : privés.
+    match /reports/{reportId} {
+      allow read: if signedIn() && resource.data.userId == request.auth.uid;
+      allow write: if false;
+    }
+
+    // Projection publique pour la carte : aucune donnée personnelle.
+    match /reportsPublic/{reportId} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    // Grand livre des points (immuable).
+    match /transactions/{txId} {
+      allow read: if signedIn() && resource.data.userId == request.auth.uid;
+      allow write: if false;
+    }
+
+    // Catalogue de la boutique et commerçants : publics (en lecture).
+    match /rewards/{rewardId} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+    match /merchants/{merchantId} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    // Bons débloqués et demandes de retrait : créés par Cloud Function, lus par leur propriétaire.
+    match /redemptions/{id} {
+      allow read: if signedIn() && resource.data.userId == request.auth.uid;
+      allow write: if false;
+    }
+    match /cashouts/{id} {
+      allow read: if signedIn() && resource.data.userId == request.auth.uid;
+      allow write: if false;
+    }
+  }
+}

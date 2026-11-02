@@ -1,0 +1,55 @@
+{
+  "expo": {
+    "name": "StreetCoin",
+    "slug": "streetcoin",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.streetcoin.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "com.streetcoin.app",
+      "permissions": [
+        "CAMERA",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "StreetCoin utilise l'appareil photo pour photographier les anomalies que tu signales.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "StreetCoin utilise ta position pour situer précisément tes signalements sur la carte."
+        }
+      ],
+      [
+        "react-native-maps",
+        {
+          "androidGoogleMapsApiKey": "REMPLACER_PAR_CLE_GOOGLE_MAPS_ANDROID",
+          "iosGoogleMapsApiKey": "REMPLACER_PAR_CLE_GOOGLE_MAPS_IOS"
+        }
+      ]
+    ]
+  }
+}
